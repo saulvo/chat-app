@@ -27,7 +27,8 @@ const firestore = firebase.firestore();
 const handleSignInClick = () => {
 	try {
 		const provider = new firebase.auth.GoogleAuthProvider();
-		auth.signInWithPopup(provider);
+		// auth.signInWithPopup(provider);
+		auth.signInWithRedirect(provider);
 	} catch (error) {
 		console.log("Loggin fail...", error);
 	}
