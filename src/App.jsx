@@ -10,7 +10,6 @@ import Footer from "./components/Footer";
 import Header from "./components/Header";
 import Signin from "./components/Signin";
 
-
 firebase.initializeApp({
 	apiKey: "AIzaSyD6al_aunfJT8XHhmSQKfKo9fPtvk5c4io",
 	authDomain: "my-app-4953b.firebaseapp.com",
@@ -26,38 +25,41 @@ const auth = firebase.auth();
 const firestore = firebase.firestore();
 
 const handleSignInClick = () => {
-	const provider = new firebase.auth.GoogleAuthProvider();
-	auth.signInWithPopup(provider);
+	try {
+		const provider = new firebase.auth.GoogleAuthProvider();
+		auth.signInWithPopup(provider);
+	} catch (error) {
+		console.log("Loggin fail...", error);
+	}
 };
 const handleSignOutClick = () => auth.signOut();
-
-
 
 function App() {
 	const [user] = useAuthState(auth);
 
-	const messagesRef = firestore.collection('messages')
-	const query = messagesRef.orderBy('createdAt').limit(25)
-	const [messages] = useCollectionData(query, {idField: 'id'})
+	const messagesRef = firestore.collection("messages");
+	const query = messagesRef.orderBy("createdAt").limit(25);
+	const [messages] = useCollectionData(query, { idField: "id" });
 
 	const sendMessage = async (formValue) => {
-		const {uid, photoURL, displayName} = auth.currentUser
+		const { uid, photoURL, displayName } = auth.currentUser;
 		await messagesRef.add({
 			text: formValue.message,
 			createdAt: firebase.firestore.FieldValue.serverTimestamp(),
 			uid,
 			photoURL,
 			uname: displayName,
-		})
-	}
-
+		});
+	};
 
 	return (
 		<>
 			<Header isLogged={!!user} signoutClick={handleSignOutClick} />
 			<Container fixed>
 				{!user && <Signin signinClick={handleSignInClick} />}
-				{user && <ChatRoom messages={messages} sendMessage={sendMessage} user={user} />}
+				{user && (
+					<ChatRoom messages={messages} sendMessage={sendMessage} user={user} />
+				)}
 			</Container>
 			<Footer />
 		</>
